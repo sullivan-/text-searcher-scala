@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Example script" default="test" basedir=".">
+  <description>
+    Build script for John Sullivan's Text Searcher solution in Scala.
+  </description>
+
+  <!-- you will probably have to adjust scala.home property -->
+  <property name="scala.home" location="/usr/local/scala" />
+  <property name="scala.lib.dir" location="${scala.home}/lib" />
+  <property name="src.dir" location="${basedir}/search" />
+  <property name="lib.dir" location="${basedir}/lib" />
+  <property name="build.dir" location="${basedir}/build" />
+  <property name="api.dir" location="${build.dir}/api" />
+
+  <path id="project.classpath">
+    <pathelement location="${scala.lib.dir}/scala-library.jar" />
+    <pathelement location="${lib.dir}/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit-dep-4.8.2.jar" />
+    <pathelement location="${build.dir}" />
+  </path>
+
+  <taskdef resource="scala/tools/ant/antlib.xml">
+    <classpath>
+      <pathelement location="${scala.lib.dir}/scala-compiler.jar" />
+      <pathelement location="${scala.lib.dir}/scala-library.jar" />
+    </classpath>
+  </taskdef>
+
+  <target name="compile" depends="">
+    <mkdir dir="${build.dir}" />
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}"
+           target="1.5"
+           classpathref="project.classpath"
+           deprecation="yes"
+           debug="true"
+           >
+      <compilerarg value="-Xlint" />
+      <include name="TextTokenizer.java" />
+    </javac>
+    <scalac srcdir="${src.dir}"
+            destdir="${build.dir}"
+            classpathref="project.classpath"
+            target="jvm-1.5"
+            deprecation="yes"
+            unchecked="yes"
+            >
+      <include name="TextSearcher.scala" />
+    </scalac>
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}"
+           target="1.5"
+           classpathref="project.classpath"
+           deprecation="yes"
+           debug="true"
+           >
+      <compilerarg value="-Xlint" />
+      <include name="TextSearcherTest.java" />
+    </javac>
+  </target>
+
+  <target name="test" depends="compile">
+    <java classname="search.TextSearcherTest"
+          classpathref="project.classpath"
+          failonerror="true"
+          />
+    <!-- alternatively:
+    <junit printsummary="withOutAndErr" haltonerror="true">
+      <classpath refid="project.classpath" />
+      <test name="search.TextSearcherTest" />
+    </junit>
+    -->
+  </target>
+
+  <target name="scaladoc">
+    <mkdir dir="${api.dir}" />
+    <scaladoc srcdir="${src.dir}"
+              destdir="${api.dir}"
+              classpathref="project.classpath"
+              />
+  </target>
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+
+</project>
